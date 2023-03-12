@@ -1,0 +1,58 @@
+System.out.println(account.getNumber()+"\n"+account.getIp()+"\n"+account.getAmount());
+        boolean firstCheck = ipAddressService.getAllIpAddresses()
+                .stream().anyMatch(u->u.getIp().equals(account.getIp()));
+        boolean secondCheck =cardService.getAllStolenCard().stream()
+                .anyMatch(u->u.getNumber().equals(String.valueOf(account.getNumber()))) ;
+        if(!cardService.luhnAlgorithm(String.valueOf(account.getNumber())) &&
+                !ipAddressService.isValidIpAddress(account.getIp())){
+            System.out.println("Here luhn verification");
+            throw new BadRequestException();
+        }
+        if(account.getAmount() > 1500 && firstCheck && secondCheck){
+            return ResponseEntity.ok(Map.of(
+                    "result", "PROHIBITED",
+                    "info","amount, card-number, ip"
+            ));
+        }
+        if(firstCheck && secondCheck){
+            return ResponseEntity.ok(Map.of(
+                    "result", "PROHIBITED",
+                    "info","card-number, ip"
+            ));
+        }
+        if(firstCheck){
+            System.out.println("Here ip verification");
+            return ResponseEntity.ok(Map.of(
+                    "result", "PROHIBITED",
+                    "info", "ip"
+            ));
+        }
+        if(secondCheck){
+            return ResponseEntity.ok(Map.of(
+                    "result", "PROHIBITED",
+                    "info","card-number"
+            ));
+        }
+        else{
+            if(account.getAmount() < 1 ){
+                System.out.println("Here amount < 1 verification");
+                return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            else if( account.getAmount() > 0 && account.getAmount() <= 200){
+                Map<String , String> res = new LinkedHashMap<>();
+                   res.put("result", "ALLOWED");
+                   res.put("info","none");
+                return ResponseEntity.ok(res);
+            } else if (account.getAmount() > 200 && account.getAmount() <= 1500) {
+                Map<String , String> res = new LinkedHashMap<>();
+                res.put("result", "MANUAL_PROCESSING");
+                res.put("info", "amount");
+                return ResponseEntity.ok(res);
+            }
+            else{
+                Map<String , String> res = new LinkedHashMap<>();
+                        res.put("result","PROHIBITED");
+                        res.put("info", "amount");
+                return  ResponseEntity.ok(res);
+            }
+        }
