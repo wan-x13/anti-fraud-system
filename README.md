@@ -1,7 +1,7 @@
 ## General Info
 ***
 This project use Spring boot  version : 2.7.3  
-This project use Spring security , Spring JPA, H2 database, Hibernate 
+This project use Spring security , Spring JPA, H2 database, Hibernate   
 The server is running at the port :28852 
 ![Image text](/Images/Description.png)  
 Frauds carry significant financial costs and risks for all stakeholders. So, the presence of an anti-fraud system is a necessity for any serious e-commerce platform.
